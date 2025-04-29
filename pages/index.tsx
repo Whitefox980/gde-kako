@@ -1,5 +1,5 @@
 "use client";
-
+import AgentCard from "../components/AgentCard";
 import React, { useState, useEffect } from "react";
 import AIOperator from "../components/AIOperator";
 import KnowledgeBase from "../components/KnowledgeBase";
@@ -48,7 +48,7 @@ export default function HomePage() {
       <AIOperator question={question} onReady={(agent) => setAgentAssigned(agent)} />
     );
   }
-
+   
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
       <button
@@ -72,23 +72,34 @@ export default function HomePage() {
       <QuestionInput onSubmit={handleSubmit} loading={loading} />
       <SuggestedQuestions onSelect={handleSubmit} />
       <SearchHistory onSelect={handleSubmit} />
-
       {loading ? (
-        <LoadingSpinner />
-      ) : (
-        message &&
-        answer && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="mt-10"
-          >
-            <AnswerDisplay message={message} answer={answer} />
-            <KnowledgeBase />
-          </motion.div>
-        )
-      )}
+  <LoadingSpinner />
+) : (
+  <>
+    {agentAssigned && (
+      <div className="mt-10">
+        <AgentCard
+          name={agentAssigned}
+          title="AI Specijalista Centrale"
+          image="/images/agent-default.png"
+        />
+      </div>
+    )}
+
+    {message && answer && (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mt-10"
+      >
+        <AnswerDisplay message={message} answer={answer} />
+        <KnowledgeBase />
+      </motion.div>
+    )}
+  </>
+)}
+
     </div>
   );
 }
