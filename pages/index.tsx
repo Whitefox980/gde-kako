@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
+import AIOperator from "../components/AIOperator";
 import KnowledgeBase from "../components/KnowledgeBase";
 import SearchHistory from "../components/SearchHistory";
 import QuestionInput from "../components/QuestionInput";
@@ -9,36 +12,26 @@ import { centralAgent } from "../agents/centralAgent";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
+  const [question, setQuestion] = useState("");
+  const [agentAssigned, setAgentAssigned] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // OVDE JE useEffect - UNUTAR KOMPONENTE
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedTheme = localStorage.getItem("theme");
-      const html = document.documentElement;
-      html.setAttribute("data-theme", storedTheme || "light");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const html = document.documentElement;
-    const current = html.getAttribute("data-theme") || "light";
-    const newTheme = current === "dark" ? "light" : "dark";
-    html.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
-  };
-
-  const handleSubmit = async (question: string) => {
+  const handleSubmit = async (q: string) => {
+    setQuestion(q);           // Pokreće AIOperator
+    setAgentAssigned(null);   // Resetuje agenta na svaki novi upit
     setLoading(true);
+
     const history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
-    const updatedHistory = [question, ...history.filter((q) => q !== question)].slice(0, 5);
+    const updatedHistory = [q, ...history.filter((h) => h !== q)].slice(0, 5);
     localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+    
     setMessage("");
     setAnswer("");
+
     try {
-      const result = await centralAgent(question);
+      const result = await centralAgent(q);
       setMessage(result.message);
       setAnswer(result.answer);
     } catch (error) {
@@ -46,24 +39,40 @@ export default function HomePage() {
       setMessage("Došlo je do greške prilikom obrade vašeg pitanja.");
       setAnswer("");
     }
+
     setLoading(false);
   };
+
+  if (!agentAssigned && question) {
+    return (
+      <AIOperator question={question} onReady={(agent) => setAgentAssigned(agent)} />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
       <button
-        onClick={toggleTheme}
+        onClick={() => {
+          const html = document.documentElement;
+          const current = html.getAttribute("data-theme") || "light";
+          const newTheme = current === "dark" ? "light" : "dark";
+          html.setAttribute("data-theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+        }}
         className="absolute top-4 right-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg"
       >
         Promeni temu
       </button>
+
       <h1 className="text-3xl font-bold mt-6 text-center">Gde-Kako.rs</h1>
       <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
         Brzi odgovori na vaša svakodnevna pitanja
       </p>
+
       <QuestionInput onSubmit={handleSubmit} loading={loading} />
       <SuggestedQuestions onSelect={handleSubmit} />
       <SearchHistory onSelect={handleSubmit} />
+
       {loading ? (
         <LoadingSpinner />
       ) : (
@@ -73,6 +82,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
+            className="mt-10"
           >
             <AnswerDisplay message={message} answer={answer} />
             <KnowledgeBase />
