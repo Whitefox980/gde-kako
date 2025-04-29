@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import QuestionInput from "@/components/QuestionInput";
-import SuggestedQuestions from "@/components/SuggestedQuestions";
-import AnswerDisplay from "@/components/AnswerDisplay";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { centralAgent } from "@/agents/centralAgent";
-
+import QuestionInput from "../components/QuestionInput";
+import SuggestedQuestions from "../components/SuggestedQuestions";
+import AnswerDisplay from "../components/AnswerDisplay";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { centralAgent } from "../agents/centralAgent";
 export default function HomePage() {
   const [message, setMessage] = useState("");
   const [answer, setAnswer] = useState("");
