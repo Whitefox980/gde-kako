@@ -1,54 +1,30 @@
-import { predragAgent } from "./specialists/predragAgent";
-import { milicaAgent } from "./specialists/milicaAgent";
-import { jocaAgent } from "./specialists/jocaAgent";
-import { oliverAgent } from "./specialists/oliverAgent";
-import { anaAgent } from "./specialists/anaAgent";
+import { articles } from "../lib/articles";
+import { askOpenAI } from "../lib/openai";
 
-type AgentResult = {
-  message: string;
-  answer: string;
-};
+function findRelatedArticles(question: string) {
+  const keywords = question.toLowerCase().split(" ");
+  return articles.filter(article =>
+    keywords.some(word =>
+      article.title.toLowerCase().includes(word) ||
+      article.description.toLowerCase().includes(word)
+    )
+  );
+}
 
-export async function centralAgent(question: string): Promise<AgentResult> {
-  const q = question.toLowerCase();
+export async function centralAgent(prompt: string) {
+  const relatedArticles = findRelatedArticles(prompt);
+  const answer = await askOpenAI(prompt);
 
-  if (q.match(/(tehnologija|laptop|telefon|računar|aplikacija|softver)/)) {
-    return {
-      message: "Vaše pitanje je iz oblasti tehnologije. Preusmeravam ga agentu **Predragu**.",
-      answer: await predragAgent(question),
-    };
-  }
+  const message = relatedArticles.length
+    ? `Na osnovu vašeg pitanja, pronašao sam ${relatedArticles.length} članak(a) koji bi mogli biti korisni.`
+    : "Evo odgovora koji sam pripremio:";
 
-  if (q.match(/(gde|lokacija|najbliži|blizu|adresa|restoran|prodavnica)/)) {
-    return {
-      message: "Vaše pitanje je vezano za lokacije. Preusmeravam ga agentu **Milici**.",
-      answer: await milicaAgent(question),
-    };
-  }
-
-  if (q.match(/(cena|najjeftinije|koliko košta|trošak|budžet|jeftino)/)) {
-    return {
-      message: "Vaše pitanje je vezano za cene i analizu tržišta. Preusmeravam ga agentu **Joci**.",
-      answer: await jocaAgent(question),
-    };
-  }
-
-  if (q.match(/(zdravlje|simptom|lek|bolnica|doktor|pregled)/)) {
-    return {
-      message: "Vaše pitanje je iz oblasti zdravlja. Preusmeravam ga agentu **Oliveru**.",
-      answer: await oliverAgent(question),
-    };
-  }
-
-  if (q.match(/(pravo|ugovor|zakon|pravni|sud|pravnik)/)) {
-    return {
-      message: "Vaše pitanje je pravne prirode. Preusmeravam ga agentu **Ani**.",
-      answer: await anaAgent(question),
-    };
-  }
+  const articleList = relatedArticles
+    .map((a) => `• [${a.title}](${a.url}) — ${a.description}`)
+    .join("\n");
 
   return {
-    message: "Vaše pitanje ne spada ni u jednu specifičnu kategoriju. Dajem univerzalni odgovor.",
-    answer: "Trenutno nemamo specijalizovanog agenta za ovu temu. Pokušajte da precizirate pitanje ili promenite formulaciju.",
+    message,
+    answer: `${answer}${relatedArticles.length ? "\n\n**Preporučeni članci:**\n" + articleList : ""}`
   };
 }

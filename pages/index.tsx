@@ -1,11 +1,36 @@
 "use client";
 
+import KnowledgeBase from "../components/KnowledgeBase";
+import SearchHistory from "../components/SearchHistory";
 import { useState } from "react";
 import QuestionInput from "../components/QuestionInput";
 import SuggestedQuestions from "../components/SuggestedQuestions";
 import AnswerDisplay from "../components/AnswerDisplay";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { centralAgent } from "../agents/centralAgent";
+import { motion } from "framer-motion";
+
+import { useEffect } from "react";
+
+// ... unutar HomePage
+
+useEffect(() => {
+  const storedTheme = localStorage.getItem("theme");
+  const html = document.documentElement;
+  if (storedTheme) {
+    html.setAttribute("data-theme", storedTheme);
+  } else {
+    html.setAttribute("data-theme", "light");
+  }
+}, []);
+
+const toggleTheme = () => {
+  const html = document.documentElement;
+  const current = html.getAttribute("data-theme") || "light";
+  const newTheme = current === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", newTheme);
+  localStorage.setItem("theme", newTheme);
+};
 export default function HomePage() {
   const [message, setMessage] = useState("");
   const [answer, setAnswer] = useState("");
@@ -13,6 +38,9 @@ export default function HomePage() {
 
   const handleSubmit = async (question: string) => {
     setLoading(true);
+    const history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
+const updatedHistory = [question, ...history.filter((q) => q !== question)].slice(0, 5);
+localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
     setMessage("");
     setAnswer("");
     try {
@@ -27,19 +55,43 @@ export default function HomePage() {
     setLoading(false);
   };
 
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    const current = html.getAttribute("data-theme") || "light";
+    html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start p-6 bg-gray-50">
-      <h1 className="text-3xl font-bold mt-6">Gde-Kako.rs</h1>
-      <p className="text-gray-600 mt-2 text-lg">Brzi odgovori na vaša svakodnevna pitanja</p>
+    <div className="min-h-screen flex flex-col items-center justify-start px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg"
+      >
+        Promeni temu
+      </button>
+
+      <h1 className="text-3xl font-bold mt-6 text-center">Gde-Kako.rs</h1>
+      <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
+        Brzi odgovori na vaša svakodnevna pitanja
+      </p>
 
       <QuestionInput onSubmit={handleSubmit} loading={loading} />
-
       <SuggestedQuestions onSelect={handleSubmit} />
-
+       <SearchHistory onSelect={handleSubmit} />
       {loading ? (
         <LoadingSpinner />
       ) : (
-        message && answer && <AnswerDisplay message={message} answer={answer} />
+        message &&
+        answer && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <AnswerDisplay message={message} answer={answer} />
+          <KnowledgeBase />
+          </motion.div>
+        )
       )}
     </div>
   );

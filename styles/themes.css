@@ -55,3 +55,6 @@ button, input {
     padding: 1rem;
   }
 }
+.prose {
+  max-width: 100%;
+}
