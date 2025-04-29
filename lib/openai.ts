@@ -1,23 +1,18 @@
-export async function getOpenAIResponse(prompt: string) {
+export async function askOpenAI(prompt: string): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-3.5-turbo",  // možeš staviti i "gpt-3.5-turbo" ako želiš jeftinije
+      model: "gpt-4",
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.4,
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(`OpenAI API Error: ${response.statusText}`);
-  }
-
-  const data = await response.json();
+  const data = await res.json();
   return data.choices[0].message.content.trim();
 }
