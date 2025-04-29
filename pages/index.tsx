@@ -4,6 +4,7 @@ import { useState } from "react";
 import QuestionInput from "@/components/QuestionInput";
 import SuggestedQuestions from "@/components/SuggestedQuestions";
 import AnswerDisplay from "@/components/AnswerDisplay";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { centralAgent } from "@/agents/centralAgent";
 
 export default function HomePage() {
@@ -36,7 +37,11 @@ export default function HomePage() {
 
       <SuggestedQuestions onSelect={handleSubmit} />
 
-      {message && answer && <AnswerDisplay message={message} answer={answer} />}
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        message && answer && <AnswerDisplay message={message} answer={answer} />
+      )}
     </div>
   );
 }
