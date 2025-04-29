@@ -1,0 +1,57 @@
+:root {
+  --background: #f9fafb;
+  --foreground: #1f2937;
+  --primary: #3b82f6;
+  --secondary: #6b7280;
+  --card-background: #ffffff;
+  --border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+  --background: #111827;
+  --foreground: #f9fafb;
+  --primary: #60a5fa;
+  --secondary: #9ca3af;
+  --card-background: #1f2937;
+  --border: #374151;
+}
+
+/* Global primena */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Linkovi i dugmad */
+a, button {
+  color: var(--primary);
+}
+
+/* Kartice (za AnswerDisplay) */
+.card {
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Headline */
+h1, h2, h3 {
+  color: var(--foreground);
+}
+
+/* Transitions */
+button, input {
+  transition: all 0.3s ease;
+}
+
+/* Responsivnost */
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+}

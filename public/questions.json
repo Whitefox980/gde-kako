@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "question": "Gde mogu kupiti zimske gume?",
+    "answer": "Preporučujemo Vulkanizer Petar u Beogradu, ili online na gume.rs i autogume.rs."
+  },
+  {
+    "id": 2,
+    "question": "Gde kupiti povoljan nameštaj?",
+    "answer": "Forma Ideale, Emmezeta, Ikea i KupujemProdajem su odlična mesta za povoljan nameštaj."
+  },
+  {
+    "id": 3,
+    "question": "Gde otići na izlet u blizini Beograda?",
+    "answer": "Možete posetiti Avalski toranj, Kosmaj, Zasavicu ili Oplenac kod Topole."
+  },
+  {
+    "id": 4,
+    "question": "Gde pronaći najbolje teretane u Beogradu?",
+    "answer": "Sky Wellness, Ahilej Teretana i Jungle Gym su vrhunske opcije."
+  },
+  {
+    "id": 5,
+    "question": "Kako naučiti programiranje online?",
+    "answer": "Preporučujemo platforme kao što su freeCodeCamp, Udemy i Codecademy."
+  },
+  {
+    "id": 6,
+    "question": "Gde mogu kupiti povoljne avio karte?",
+    "answer": "Preko sajta Skyscanner.rs, eSky.rs ili Kayak.com."
+  },
+  {
+    "id": 7,
+    "question": "Gde pronaći freelance poslove za programere u Srbiji?",
+    "answer": "Na sajtovima Upwork, Freelancer.com i domaćem Helloworld.rs."
+  },
+  {
+    "id": 8,
+    "question": "Gde otići na romantičan vikend u Srbiji?",
+    "answer": "Preporučujemo Vrnjačku Banju, Zlatibor ili Divčibare."
+  },
+  {
+    "id": 9,
+    "question": "Kako otvoriti firmu u Srbiji?",
+    "answer": "Možete preko APR portala online ili lično u Agenciji za privredne registre."
+  },
+  {
+    "id": 10,
+    "question": "Gde pronaći kvalitetne kurseve stranih jezika?",
+    "answer": "U institucijama kao što su Kolarčeva zadužbina, Berlitz škola i online preko Duolingo-a."
+  }
+]
