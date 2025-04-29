@@ -1,8 +1,6 @@
-"use client";
-
+import React, { useState, useEffect } from "react";
 import KnowledgeBase from "../components/KnowledgeBase";
 import SearchHistory from "../components/SearchHistory";
-import { useState } from "react";
 import QuestionInput from "../components/QuestionInput";
 import SuggestedQuestions from "../components/SuggestedQuestions";
 import AnswerDisplay from "../components/AnswerDisplay";
@@ -10,37 +8,33 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { centralAgent } from "../agents/centralAgent";
 import { motion } from "framer-motion";
 
-import { useEffect } from "react";
-
-// ... unutar HomePage
-
-useEffect(() => {
-  const storedTheme = localStorage.getItem("theme");
-  const html = document.documentElement;
-  if (storedTheme) {
-    html.setAttribute("data-theme", storedTheme);
-  } else {
-    html.setAttribute("data-theme", "light");
-  }
-}, []);
-
-const toggleTheme = () => {
-  const html = document.documentElement;
-  const current = html.getAttribute("data-theme") || "light";
-  const newTheme = current === "dark" ? "light" : "dark";
-  html.setAttribute("data-theme", newTheme);
-  localStorage.setItem("theme", newTheme);
-};
 export default function HomePage() {
   const [message, setMessage] = useState("");
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // OVDE JE useEffect - UNUTAR KOMPONENTE
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedTheme = localStorage.getItem("theme");
+      const html = document.documentElement;
+      html.setAttribute("data-theme", storedTheme || "light");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    const current = html.getAttribute("data-theme") || "light";
+    const newTheme = current === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
   const handleSubmit = async (question: string) => {
     setLoading(true);
     const history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
-const updatedHistory = [question, ...history.filter((q) => q !== question)].slice(0, 5);
-localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+    const updatedHistory = [question, ...history.filter((q) => q !== question)].slice(0, 5);
+    localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
     setMessage("");
     setAnswer("");
     try {
@@ -55,12 +49,6 @@ localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
     setLoading(false);
   };
 
-  const toggleTheme = () => {
-    const html = document.documentElement;
-    const current = html.getAttribute("data-theme") || "light";
-    html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
       <button
@@ -69,15 +57,13 @@ localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
       >
         Promeni temu
       </button>
-
       <h1 className="text-3xl font-bold mt-6 text-center">Gde-Kako.rs</h1>
       <p className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
         Brzi odgovori na vaša svakodnevna pitanja
       </p>
-
       <QuestionInput onSubmit={handleSubmit} loading={loading} />
       <SuggestedQuestions onSelect={handleSubmit} />
-       <SearchHistory onSelect={handleSubmit} />
+      <SearchHistory onSelect={handleSubmit} />
       {loading ? (
         <LoadingSpinner />
       ) : (
@@ -89,7 +75,7 @@ localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
             transition={{ duration: 0.4 }}
           >
             <AnswerDisplay message={message} answer={answer} />
-          <KnowledgeBase />
+            <KnowledgeBase />
           </motion.div>
         )
       )}
