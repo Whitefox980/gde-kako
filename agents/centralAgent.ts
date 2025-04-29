@@ -1,30 +1,30 @@
-import { articles } from "../lib/articles";
-import { askOpenAI } from "../lib/openai";
+import fs from "fs";
+import path from "path";
 
-function findRelatedArticles(question: string) {
-  const keywords = question.toLowerCase().split(" ");
-  return articles.filter(article =>
-    keywords.some(word =>
-      article.title.toLowerCase().includes(word) ||
-      article.description.toLowerCase().includes(word)
-    )
-  );
-}
+...
 
-export async function centralAgent(prompt: string) {
-  const relatedArticles = findRelatedArticles(prompt);
-  const answer = await askOpenAI(prompt);
+export async function centralAgent(question: string): Promise<{ message: string; answer: string; }> {
+  // ... Tavily i OpenAI kao do sada
 
-  const message = relatedArticles.length
-    ? `Na osnovu vašeg pitanja, pronašao sam ${relatedArticles.length} članak(a) koji bi mogli biti korisni.`
-    : "Evo odgovora koji sam pripremio:";
+  const fullAnswer = aiResponse.data.choices[0].message?.content?.trim() || "Nije pronađeno.";
 
-  const articleList = relatedArticles
-    .map((a) => `• [${a.title}](${a.url}) — ${a.description}`)
-    .join("\n");
+  // UPIS U BAZU
+  try {
+    const filePath = path.join(process.cwd(), "data", "answers.json");
+    const existing = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    existing.push({
+      question,
+      answer: fullAnswer,
+      timestamp: new Date().toISOString(),
+      sources: tavilyResponse.results.map(r => ({ title: r.title, url: r.url })),
+    });
+    fs.writeFileSync(filePath, JSON.stringify(existing, null, 2));
+  } catch (err) {
+    console.error("Greška pri upisu u bazu:", err);
+  }
 
   return {
-    message,
-    answer: `${answer}${relatedArticles.length ? "\n\n**Preporučeni članci:**\n" + articleList : ""}`
+    message: fullAnswer,
+    answer: fullAnswer,
   };
 }
